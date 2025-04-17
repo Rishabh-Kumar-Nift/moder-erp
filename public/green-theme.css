@@ -1,0 +1,26 @@
+/* Custom styles for green backgrounds */
+
+
+h3 {
+    background-color: #2e8b57 !important; /* Sea Green subheadings */
+}
+
+.add-button {
+    background-color: #2e8b57 !important; /* Sea Green add button */
+}
+
+.add-button:hover {
+    background-color: #1d6b42 !important; /* Darker green on hover */
+}
+
+/* Style Info Panel Heading */
+.style-info-panel h3 {
+    background-color: #2e8b57 !important;
+}
+
+
+
+/* For dropdown menu colors and other style box icons */
+.style-box i {
+    color: #2e8b57 !important;
+}

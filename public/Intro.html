@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Style Details Entry</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to external CSS file -->
+    <!-- Add Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="body-bg-dark">
+
+    <!-- Sidebar Toggle Button -->
+    <div class="sidebar-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i> <!-- Hamburger icon -->
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>Menu</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="intro.html" class="active"><i class="fas fa-file-alt"></i> Style Details Entry</a></li>
+            <li><a href="bom.html"><i class="fas fa-list"></i> Bill of Materials (BOM)</a></li>
+            <li><a href="pra.html"><i class="fas fa-shopping-cart"></i> Purchase Requisition for Accessories</a></li>
+            <li><a href="prf.html"><i class="fas fa-tshirt"></i> Purchase Requisition for Fabric</a></li>
+            <li><a href="poa.html"><i class="fas fa-file-invoice"></i> Purchase Order for Accessories (POA)</a></li>
+            <li><a href="pof.html"><i class="fas fa-file-invoice"></i> Purchase Order (PO) for Fabric</a></li>
+            <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="grn.html"><i class="fas fa-receipt"></i> GRN & Request Number Generation</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <a href="#" id="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </div>
+
+    <!-- Header Section -->
+    <header class="header">
+        <div class="logo">&nbsp;&nbsp;&nbsp;&nbsp;TrimTrack</div>
+        <div class="user-info">
+            <span id="username">Guest</span> <!-- Dynamic user name -->
+        </div>
+        <div class="search-container">
+            <input type="text" class="search-bar" placeholder="Search...">
+            <i class="fas fa-search search-icon"></i> <!-- Font Awesome search icon -->
+        </div>
+    </header>
+
+    <!-- Main Content Section -->
+    <div class="jupiter-container">
+        <div class="saturn-header">Style Details Entry</div>
+        <form id="styleForm">
+            <div class="mercury-group">
+                <label for="style-number">Style Number:</label>
+                <input type="text" id="style-number" name="style_number" placeholder="Enter Style Number" required>
+            </div>
+
+            <div class="mercury-group">
+                <label for="style-name">Style Name:</label>
+                <input type="text" id="style-name" name="style_name" placeholder="Enter Style Name" required>
+            </div>
+
+            <div class="mercury-group">
+                <label for="buyer-name">Buyer/Brand Name:</label>
+                <select id="buyer-name" name="buyer_name" required>
+                    <option value="">Select Buyer</option>
+                    <option value="Bestseller">Bestseller</option>
+                    <option value="H&M">H&M</option>
+                    <option value="ZARA">ZARA</option>
+                    <option value="Kappahl">Kappahl</option>
+                    <option value="American Eagle">American Eagle</option>
+                    <option value="El Corte">El Corte</option>
+                    <option value="Benetton">Benetton</option>
+                    <option value="Cecil">Cecil</option>
+                </select>
+            </div>
+
+            <div class="mercury-group">
+                <label for="sample-type">Sample Type:</label>
+                <select id="sample-type" name="sample_type" required>
+                    <option value="">Select Sample Type</option>
+                    <option value="Proto">Proto Sample</option>
+                    <option value="Fit">Fit Sample</option>
+                    <option value="PP">PP Sample</option>
+                    <option value="Shipment">Shipment Sample</option>
+                    <option value="Counter">Counter Sample</option>
+                </select>
+            </div>
+
+            <div class="mercury-group">
+                <label for="completion-date">Expected Sample Completion Date:</label>
+                <input type="date" id="completion-date" name="completion_date" required>
+            </div>
+
+            <div class="mercury-group">
+                <label for="remarks">Remarks (Optional):</label>
+                <textarea id="remarks" name="remarks" rows="3" placeholder="Enter any remarks..."></textarea>
+            </div>
+
+            <div class="venus-actions">
+                <button type="submit" class="mars-button">Save and Next</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <p>Contact Info: contact@xyz.com | Phone: +91 12345 67890 | Address: A-101, Delhi</p>
+        <p>© 2025 TrimTrack. All Rights Reserved.</p>
+    </footer>
+
+    <!-- Fixed JavaScript -->
+    <script>
+        // Check and display dynamic user info on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const username = localStorage.getItem('username');
+            const token = localStorage.getItem('token');
+
+            if (!username || !token) {
+                alert('Please login first!');
+                window.location.href = 'login.html';
+            } else {
+                document.getElementById('username').innerText = username;
+            }
+        });
+        
+        // Logout functionality
+        document.getElementById('logout').addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.clear();
+            alert('You have been logged out.');
+            window.location.href = 'login.html';
+        });
+        
+        // Sidebar toggle function
+        function toggleSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("open");
+        }
+        
+        // Form submission for Style creation
+        document.getElementById("styleForm").addEventListener("submit", async function(e) {
+            e.preventDefault();
+        
+            // Get form data
+            const style_number = document.getElementById("style-number").value;
+            const style_name = document.getElementById("style-name").value;
+            const buyer_name = document.getElementById("buyer-name").value;
+            const sample_type = document.getElementById("sample-type").value;
+            const expected_completion_date = document.getElementById("completion-date").value;
+            const remarks = document.getElementById("remarks").value;
+        
+            const token = localStorage.getItem('token');
+            const styleData = { style_number, style_name, buyer_name, sample_type, expected_completion_date, remarks };
+        
+            console.log('Sending Data:', styleData);
+        
+            try {
+                const response = await fetch('http://localhost:5001/api/styles/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(styleData)
+                });
+        
+                const result = await response.json();
+                console.log('Response:', result);
+        
+                if (response.ok) {
+                    // Store style information for use in BOM page
+                    localStorage.setItem('style_id', result.style_id);
+                    localStorage.setItem('style_number', style_number);
+                    localStorage.setItem('style_name', style_name);
+                    localStorage.setItem('selected_buyer', buyer_name);
+                    
+                    alert('✅ Style added successfully! Proceeding to BOM.');
+                    window.location.href = 'bom.html';
+                } else {
+                    alert('❌ Error: ' + (result.error || 'Failed to add style.'));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('❌ Backend connection error. Please try again later.');
+            }
+        });
+    </script>
+</body>
+</html>

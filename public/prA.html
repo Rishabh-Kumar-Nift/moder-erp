@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase Requisition (PR) for Accessories</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="blue-theme.css">
+</head>
+<body class="body-bg-light">
+
+    <!-- Sidebar Toggle Button -->
+    <div class="sidebar-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i> <!-- Hamburger icon -->
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>Menu</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="intro.html"><i class="fas fa-file-alt"></i> Style Details Entry</a></li>
+            <li><a href="bom.html"><i class="fas fa-list"></i> Bill of Materials (BOM)</a></li>
+            <li><a href="pra.html"><i class="fas fa-shopping-cart"></i> Purchase Requisition for Accessories</a></li>
+            <li><a href="prf.html"><i class="fas fa-tshirt"></i> Purchase Requisition for Fabric</a></li>
+            <li><a href="poa.html"><i class="fas fa-file-invoice"></i> Purchase Order for Accessories (POA)</a></li>
+            <li><a href="pof.html"><i class="fas fa-file-invoice"></i> Purchase Order (PO) for Fabric</a></li>
+            <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Procurement Status Dashboard</a></li>
+            <li><a href="grn.html"><i class="fas fa-receipt"></i> GRN & Request Number Generation</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <a href="#" id="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </div>
+    
+    <!-- Header Section -->
+<header class="header">
+    <div class="logo">&nbsp;&nbsp;&nbsp;&nbsp;TrimTrack</div>
+    <div class="user-info">
+        <span id="username">Guest</span> <!-- Dynamic user name -->
+         <!-- Dynamic user ID -->
+    </div>
+    <div class="search-container">
+        <input type="text" class="search-bar" placeholder="Search...">
+        <i class="fas fa-search search-icon"></i> <!-- Font Awesome search icon -->
+    </div>
+</header>
+
+    <div class="form-container">
+        <!-- Heading inside a box -->
+        <div class="form-header">
+            Purchase Requisition (PR) for Accessories
+        </div>
+
+        <div class="style-info-panel">
+            <h3>Style Information</h3>
+            <div class="style-details">
+                <div class="style-box">
+                    <i class="fas fa-hashtag"></i>
+                    <div class="style-content">
+                        <p class="style-label">Style Number</p>
+                        <p class="style-value" id="displayStyleNumber">-</p>
+                    </div>
+                </div>
+                <div class="style-box">
+                    <i class="fas fa-tag"></i>
+                    <div class="style-content">
+                        <p class="style-label">Style Name</p>
+                        <p class="style-value" id="displayStyleName">-</p>
+                    </div>
+                </div>
+                <div class="style-box">
+                    <i class="fas fa-user"></i>
+                    <div class="style-content">
+                        <p class="style-label">Buyer</p>
+                        <p class="style-value" id="displayBuyer">-</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table for PR Requests -->
+        <div class="table-container">
+            <table class="material-table">
+                <thead>
+                    <tr>
+                        <th>Accessory Name</th>
+                        <th>Color</th>
+                        <th>Quantity</th>
+                        <th>Priority</th>
+                        <th>Expected Delivery</th>
+                        <th>Remarks</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="prTableBody"></tbody>
+                    <!-- Example Row -->
+            </table>
+        </div>
+
+        <!-- Add New PR Form -->
+        <div class="add-material">
+            <h3>Add New PR Request</h3>
+            <div class="input-grid">
+                <select id="accessoryName" class="form-groups">
+                    <option value="">"Accessory Name"</option>
+                </select>
+                <select id="colors" class="form-groups">
+                    <option value="">"Color (e.g., Off White, Black)"</option>
+                </select>
+                <input type="number" id="quantity" placeholder="Quantity">
+                <select id="priority" class="form-groups">
+                    <option value="High">Priority - High</option>
+                    <option value="Medium">Priority - Medium</option>
+                    <option value="Low">Priority - Low</option>
+                </select>
+                <input type="date" id="expectedDate">
+                <input type="text" id="remarks" placeholder="Remarks (Optional)">
+            </div>
+            <button onclick="addPRRequest()" class="add-button">Add Request</button>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="save-button-container">
+            <button onclick="submitPR()" class="save-button" >Save and Next</button>
+        </div>
+
+        <!-- Arrow Buttons -->
+        <div class="arrow-buttons">
+            <span class="arrow" onclick="goBack()"><i class="fas fa-arrow-left"></i></span>
+            <span class="arrow disabled" id="nextArrow" onclick="goForward()"><i class="fas fa-arrow-right"></i></span>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <p>Contact Info: contact@xyz.com | Phone: +91 12345 67890 | Address: A-101, Delhi</p>
+        <p>© 2025 TrimTrack. All Rights Reserved.</p>
+    </footer>
+
+    <!-- JavaScript for Adding/Removing Rows -->
+    <script>
+        // Combined DOMContentLoaded event listener
+        document.addEventListener('DOMContentLoaded', function () {
+            const username = localStorage.getItem('username');
+            const token = localStorage.getItem('token');
+        
+            if (!username || !token) {
+                alert('Please login first!');
+                window.location.href = 'login.html';
+                return;
+            }
+        
+            document.getElementById('username').innerText = `${username}`;
+            // Display style details
+            document.getElementById('displayStyleNumber').textContent = localStorage.getItem('style_number') || '-';
+            document.getElementById('displayStyleName').textContent = localStorage.getItem('style_name') || '-';
+            document.getElementById('displayBuyer').textContent = localStorage.getItem('selected_buyer') || '-';
+        
+            loadaccessoryNameDropdown();
+            loadcolorsDropdown();
+        
+            if (!document.getElementById("quantity")) {
+                console.error("Quantity field missing from form!");
+            }
+        });
+        
+        // Logout functionality
+        document.getElementById('logout').addEventListener('click', function (e) {
+            e.preventDefault();
+            localStorage.clear();
+            alert('You have been logged out.');
+            window.location.href = 'login.html';
+        });
+        
+        // Toggle sidebar open/close
+        function toggleSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("open");
+        }
+        
+        const token = localStorage.getItem('token');
+        const style_id = localStorage.getItem('style_id');
+        let prAccessories = [];
+        let accessoryNames = [];
+        let colorsList = []; // Renamed to avoid conflict and declared properly
+        
+        function loadaccessoryNameDropdown() {
+            fetch('trim.csv')
+                .then(response => response.text())
+                .then(csvText => {
+                    const lines = csvText.split('\n').map(line => line.trim()).filter(line => line);
+                    accessoryNames = lines.slice(1);
+        
+                    const accessoryNameSelect = document.getElementById('accessoryName');
+                    accessoryNameSelect.innerHTML = '<option value="">Accessory Name</option>';
+                    accessoryNames.forEach(accessoryName => {
+                        let cleanName = accessoryName.replace(/^"|"$/g, '').replace(/,+$/, '').trim();
+                        if (cleanName && cleanName !== '') {
+                            const option = document.createElement('option');
+                            option.value = cleanName;
+                            option.textContent = cleanName;
+                            accessoryNameSelect.appendChild(option);
+                        }
+                    });
+                })
+                .catch(error => console.error('Error loading accessory names:', error));
+        }
+        
+        function loadcolorsDropdown() {
+            fetch('colorball.csv')
+                .then(response => response.text())
+                .then(csvText => {
+                    const lines = csvText.split('\n').map(line => line.trim()).filter(line => line);
+                    colorsList = lines.slice(1);
+        
+                    const colorsSelect = document.getElementById('colors');
+                    colorsSelect.innerHTML = '<option value="">Color (e.g., Off White, Black)</option>';
+                    colorsList.forEach(color => {
+                        let cleanName = color.replace(/^"|"$/g, '').replace(/,+$/, '').trim();
+                        if (cleanName && cleanName !== '') {
+                            const option = document.createElement('option');
+                            option.value = cleanName;
+                            option.textContent = cleanName;
+                            colorsSelect.appendChild(option);
+                        }
+                    });
+                })
+                .catch(error => console.error('Error loading colors:', error));
+        }
+        
+        function addPRRequest() {
+            const accessoryName = document.getElementById("accessoryName").value;
+            const colors = document.getElementById("colors").value;
+            const quantity = parseFloat(document.getElementById("quantity").value);
+            const priority = document.getElementById("priority").value;
+            const expectedDate = document.getElementById("expectedDate").value;
+            const remarks = document.getElementById("remarks").value;
+        
+            // Validate required fields
+            if (!accessoryName || !colors || !priority || !expectedDate) {
+                alert('Please fill all required fields!');
+                return;
+            }
+        
+            // Validate numerical field
+            if (isNaN(quantity) || quantity <= 0) {
+                alert('❌ Quantity must be a positive number!');
+                return;
+            }
+        
+            prAccessories.push({
+                accessory_name: accessoryName,
+                colors: colors,
+                required_quantity: quantity,
+                priority_status: priority,
+                expected_delivery_date: expectedDate,
+                remarks: remarks || ''
+            });
+        
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${accessoryName}</td>
+                <td>${colors}</td>
+                <td>${quantity}</td>
+                <td>${priority}</td>
+                <td>${expectedDate}</td>
+                <td>${remarks || ''}</td>
+                <td>
+                    <button class="delete-button" onclick="removeRow(this)">Delete</button>
+                </td>
+            `;
+            document.getElementById('prTableBody').appendChild(row);
+        
+            // Clear input fields after adding
+            document.getElementById("accessoryName").value = "";
+            document.getElementById("colors").value = "";
+            document.getElementById("quantity").value = "";
+            document.getElementById("priority").value = "High";
+            document.getElementById("expectedDate").value = "";
+            document.getElementById("remarks").value = "";
+        }
+        
+        // Remove Row and Data
+        function removeRow(button) {
+            const row = button.closest('tr');
+            const index = row.rowIndex - 1;
+            prAccessories.splice(index, 1);
+            row.remove();
+        }
+        
+        function submitPR() {
+            console.log("Token:", token);
+            console.log("Style ID:", style_id);
+        
+            if (!style_id || !token) {
+                alert('❌ Missing Style ID or Token! Start from Style Entry.');
+                return;
+            }
+        
+            if (prAccessories.length === 0) {
+                alert('❌ Please add at least one material before submitting!');
+                return;
+            }
+        
+            let successCount = 0;
+            let errorCount = 0;
+            const totalItems = prAccessories.length;
+            const errors = [];
+        
+            prAccessories.forEach(item => {
+                console.log('Submitting PR Accessories Data:', JSON.stringify({ style_id, ...item }));
+                fetch('http://localhost:5001/api/pr-accessories/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ style_id, ...item })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('PR Added:', data);
+                    successCount++;
+        
+                    if (data.pr_accessory_id) {
+                        localStorage.setItem('pr_accessory_id', data.pr_accessory_id);
+                        console.log('pr_accessory_id stored:', data.pr_accessory_id);
+                    } else {
+                        console.warn('pr_accessory_id not returned from API!');
+                    }
+        
+                    if (successCount + errorCount === totalItems) {
+                        if (errorCount > 0) {
+                            alert(`✅ Partially successful: ${successCount} PRs submitted, ${errorCount} failed.\nErrors: ${errors.join('; ')}`);
+                        } else {
+                            alert('✅ PR Accessories submitted successfully!');
+                        }
+                        window.location.href = 'poA.html';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    errorCount++;
+                    errors.push(error.message);
+                    if (successCount + errorCount === totalItems) {
+                        if (errorCount > 0) {
+                            alert(`✅ Partially successful: ${successCount} PRs submitted, ${errorCount} failed.\nErrors: ${errors.join('; ')}`);
+                        } else {
+                            alert('✅ PR Accessories submitted successfully!');
+                        }
+                        window.location.href = 'poA.html';
+                    }
+                });
+            });
+        }
+        
+        // Navigation Buttons
+        function goBack() {
+            window.history.back();
+        }
+        </script>
+</body>
+</html>

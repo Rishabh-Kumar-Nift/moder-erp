@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - TrimTrack</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="body-bg-dark">
+    <!-- Header Section -->
+    <header class="header">
+        <div class="logo">TrimTrack</div>
+        <div class="search-container">
+            <input type="text" class="search-bar" placeholder="Search...">
+            <i class="fas fa-search search-icon"></i>
+        </div>
+    </header>
+
+    <!-- Signup Form -->
+    <div class="usa-login">
+        <h2 class="saturn-header">Sign Up</h2>
+        <form id="signupForm">
+            <div class="japan-signup-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Choose a username" required>
+            </div>
+            <div class="japan-signup-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            </div>
+            <div class="japan-signup-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Create a password" required>
+            </div>
+            <div class="japan-signup-group">
+                <label for="securityQuestion">Security Question</label>
+                <select id="securityQuestion" name="securityQuestion" class="custom-select" required>
+                    <option value="" disabled selected>Select a security question</option>
+                    <option value="What is the name of your first pet?">What is the name of your first pet?</option>
+                    <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                    <option value="What was the name of your first school?">What was the name of your first school?</option>
+                    <option value="What is your favorite book?">What is your favorite book?</option>
+                </select>
+            </div>
+            <div class="japan-signup-group">
+                <label for="securityAnswer">Security Answer</label>
+                <input type="text" id="securityAnswer" name="securityAnswer" placeholder="Enter your answer" required>
+            </div>
+            <button class="usa-login-button" type="submit">Sign Up</button>
+        </form>
+        <br>
+
+    <div class="signup-prompt">
+        <p class="signup-text">Already have an account?</p>
+        <a class="doodle-button" href="login.html">Login here</a>
+    </div>
+    </div>
+    <!-- Footer Section -->
+    <footer class="footer">
+        <p>Contact Info: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3754585943565443774f4e4d1954585a">[email&#160;protected]</a> | Phone: +91 12345 67890 | Address: A-101, Delhi</p>
+        <p>© 2025 TrimTrack. All Rights Reserved.</p>
+    </footer>
+
+    <!-- Signup Form Script -->
+    <script>
+    document.getElementById('signupForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const securityQuestion = document.getElementById('securityQuestion').value;
+        const securityAnswer = document.getElementById('securityAnswer').value;
+
+        try {
+            const response = await fetch('http://localhost:5001/api/auth/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, email, password, securityQuestion, securityAnswer })
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                alert('Signup successful! Please login.');
+                window.location.href = 'login.html';
+            } else {
+                alert(data.error || 'Signup failed. Please try again.');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Signup failed. Please try again.');
+        }
+    });
+    </script>
+</body>
+</html>

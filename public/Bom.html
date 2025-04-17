@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bill of Materials (BOM)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="styles.css"> <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="blue-theme.css">
+
+</head>
+<body class="body-bg-light">
+
+   <!-- Sidebar Toggle Button -->
+   <div class="sidebar-toggle" onclick="toggleSidebar()">
+    <i class="fas fa-bars"></i> <!-- Hamburger icon -->
+</div>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <h2>Menu</h2>
+    </div>
+    <ul class="sidebar-menu">
+        <li><a href=><i class=></i> </a></li>
+        <li><a href="intro.html"><i class="fas fa-file-alt"></i> Style Details Entry</a></li>
+        <li><a href="bom.html"><i class="fas fa-list"></i> Bill of Materials (BOM)</a></li>
+        <li><a href="pra.html"><i class="fas fa-shopping-cart"></i> Purchase Requisition for Accessories</a></li>
+        <li><a href="prf.html"><i class="fas fa-tshirt"></i> Purchase Requisition for Fabric</a></li>
+        <li><a href="poa.html"><i class="fas fa-file-invoice"></i> Purchase Order for Accessories (POA)</a></li>
+        <li><a href="pof.html"><i class="fas fa-file-invoice"></i> Purchase Order (PO) for Fabric</a></li>
+        <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Procurement Status Dashboard</a></li>
+        <li><a href="grn.html"><i class="fas fa-receipt"></i> GRN & Request Number Generation</a></li>
+    </ul>
+    <div class="sidebar-footer">
+        <a href="#" id="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+</div>
+
+<!-- Header Section -->
+<header class="header">
+    <div class="logo">&nbsp;&nbsp;&nbsp;&nbsp;TrimTrack</div>
+    <div class="user-info">
+        <span id="username">Guest</span> <!-- Dynamic user name -->
+         <!-- Dynamic user ID -->
+    </div>
+    <div class="search-container">
+        <input type="text" class="search-bar" placeholder="Search...">
+        <i class="fas fa-search search-icon"></i> <!-- Font Awesome search icon -->
+    </div>
+</header>
+
+
+    <div class="form-container">
+        <!-- Heading inside a box -->
+        <div class="form-header">
+            Bill of Materials (BOM)
+        </div><!-- Add this right after your form-header div -->
+        
+        <div class="style-info-panel">
+            <h3>Style Information</h3>
+            <div class="style-details">
+                <div class="style-box">
+                    <i class="fas fa-hashtag"></i>
+                    <div class="style-content">
+                        <p class="style-label">Style Number</p>
+                        <p class="style-value" id="displayStyleNumber">-</p>
+                    </div>
+                </div>
+                <div class="style-box">
+                    <i class="fas fa-tag"></i>
+                    <div class="style-content">
+                        <p class="style-label">Style Name</p>
+                        <p class="style-value" id="displayStyleName">-</p>
+                    </div>
+                </div>
+                <div class="style-box">
+                    <i class="fas fa-user"></i>
+                    <div class="style-content">
+                        <p class="style-label">Buyer</p>
+                        <p class="style-value" id="displayBuyer">-</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <div class="table-container">
+            <table class="material-table">
+                <thead>
+                    <tr>
+                        <th>Material Type</th>
+                        <th>Description</th>
+                        <th>Quantity</th>
+                        <th>Unit</th>
+                        <th>Sourcing Location</th>
+                        <th>Material File</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="bomTableBody"></tbody>
+            </table>
+
+        </div>
+
+        <div class="add-material">
+            <h3>Add New Material</h3>
+            <div class="input-grid">
+                <select id="materialType" class="form-groups">
+                    <option value="">Select Material Type</option>
+                    <option value="Fabric">Fabric</option>
+                    <option value="Trim">Trim</option>
+                    <option value="Accessories">Accessories</option>
+                    <option value="Packaging">Packaging Material</option>
+                </select>
+                <input type="text" id="description" placeholder="Description">
+                <input type="number" id="quantity" placeholder="Quantity">
+                <select id="unit" class="form-groups">
+                    <option value="">Unit (Meters, Pieces, etc.)</option>
+                </select>
+                <input type="text" id="location" placeholder="Sourcing Location">
+                <!-- Custom File Upload Button -->
+<label for="materialFile" class="custom-file-upload">
+    <i class="fas fa-upload"></i> Upload File
+</label>
+<input type="file" id="materialFile" accept=".pdf,.doc,.docx,.xlsx,.xls,.jpg,.png" />
+<p id="file-name">No file selected</p>
+
+            </div>
+            <button onclick="addMaterial()" class="add-button">Add Material</button>
+        </div>
+
+        <div class="save-button-container">
+            <button onclick="submitBOM()" class="save-button">Save and Next</button>
+        </div>
+
+        <div class="arrow-buttons">
+            <span class="arrow" onclick="goBack()"><i class="fas fa-arrow-left"></i></span>
+            <span class="arrow disabled" id="nextArrow" onclick="goForward()"><i class="fas fa-arrow-right"></i></span>
+        </div>        
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <p>Contact Info: contact@xyz.com | Phone: +91 12345 67890 | Address: A-101, Delhi</p>
+        <p>© 2025 TrimTrack. All Rights Reserved.</p>
+    </footer>
+
+    <!-- ✅ Final JavaScript -->
+<script>
+    // Check and display dynamic user info on page load
+    window.addEventListener('DOMContentLoaded', () => {
+    const username = localStorage.getItem('username');
+    const token = localStorage.getItem('token');
+
+    if (!username || !token) {
+        alert('Please login first!');
+        window.location.href = 'login.html';
+    } else {
+        document.getElementById('username').innerText = `${username}`;
+        // Load style details
+        document.getElementById('displayStyleNumber').textContent = localStorage.getItem('style_number') || '-';
+        document.getElementById('displayStyleName').textContent = localStorage.getItem('style_name') || '-';
+        document.getElementById('displayBuyer').textContent = localStorage.getItem('selected_buyer') || '-';
+    }
+});
+        
+        // Logout functionality
+        document.getElementById('logout').addEventListener('click', function (e) {
+            e.preventDefault();
+            localStorage.clear(); // Clear all stored data
+            alert('You have been logged out.');
+            window.location.href = 'login.html'; // Redirect to login
+        });
+        
+        
+    // Sidebar toggle
+    function toggleSidebar() {
+        document.getElementById("sidebar").classList.toggle("open");
+    }
+    // Show selected file name
+document.getElementById('materialFile').addEventListener('change', function () {
+    const fileName = this.files[0] ? this.files[0].name : 'No file selected';
+    document.getElementById('file-name').textContent = fileName;
+});
+
+
+    const token = localStorage.getItem('token');
+    const style_id = localStorage.getItem('style_id');
+    let bomData = [];
+
+    function loadUnitDropdown() {
+    fetch('unit.csv')
+        .then(response => response.text())
+        .then(csvText => {
+            const lines = csvText.split('\n').map(line => line.trim()).filter(line => line);
+            unit = lines.slice(1); // Skip header
+
+            // ✅ Populate composition dropdown in the form
+            const unitSelect = document.getElementById('unit');
+            unitSelect.innerHTML = '<option value="">Unit (Meters, Kg, etc.)</option>';
+            
+            // Filter out empty values and process each composition option
+            unit.forEach(comp => {
+                // Skip empty values and quoted empty strings
+                if (comp && comp !== '""') {
+                    const option = document.createElement('option');
+                    option.value = comp.replace(/^"|"$/g, ''); // Remove any surrounding quotes
+                    option.textContent = comp.replace(/^"|"$/g, '');
+                    unitSelect.appendChild(option);
+                }
+            });
+        })
+        .catch(error => console.error('Error loading units:', error));
+}
+
+   // Update the addMaterial function to store the actual file object
+function addMaterial() {
+    const materialType = document.getElementById('materialType').value;
+    const description = document.getElementById('description').value;
+    const quantity = document.getElementById('quantity').value;
+    const unit = document.getElementById('unit').value;
+    const location = document.getElementById('location').value;
+    const materialFile = document.getElementById('materialFile').files[0];
+
+    if (!materialType || !description || !quantity || !unit || !location || !materialFile) {
+        alert('Please fill all fields!');
+        return;
+    }
+
+    // Store the actual file object, not just the name
+    bomData.push({
+        material_type: materialType,
+        material_description: description,
+        quantity_required: quantity,
+        unit: unit,
+        sourcing_location: location,
+        material_file: materialFile,
+        file_name: materialFile.name
+    });
+
+    const row = document.createElement('tr');
+    // Add a data attribute to store the index in bomData array
+    row.dataset.index = bomData.length - 1;
+    row.innerHTML = `
+        <td>${materialType}</td>
+        <td>${description}</td>
+        <td>${quantity}</td>
+        <td>${unit}</td>
+        <td>${location}</td>
+        <td>${materialFile.name}</td>
+        <td><button onclick="removeRow(this)" class="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600">Remove</button></td>
+    `;
+    document.getElementById('bomTableBody').appendChild(row);
+
+    // Clear fields
+    document.getElementById('materialType').value = '';
+    document.getElementById('description').value = '';
+    document.getElementById('quantity').value = '';
+    document.getElementById('unit').value = '';
+    document.getElementById('location').value = '';
+    document.getElementById('materialFile').value = '';
+    document.getElementById('file-name').textContent = 'No file selected';
+}
+
+// Function to remove a row from the table and the corresponding data from bomData array
+function removeRow(button) {
+    const row = button.closest('tr');
+    const index = parseInt(row.dataset.index);
+    
+    // Remove the row from the table
+    row.remove();
+    
+    // Remove the corresponding data from bomData array
+    bomData.splice(index, 1);
+    
+    // Update the data-index attributes for all remaining rows
+    const rows = document.querySelectorAll('#bomTableBody tr');
+    rows.forEach((row, i) => {
+        row.dataset.index = i;
+    });
+}
+
+// Update the submitBOM function to use FormData for each item with its file
+function submitBOM() {
+    if (!style_id || !token) {
+        alert('❌ Missing Style ID or Token! Start from Style Entry.');
+        return;
+    }
+
+    if (bomData.length === 0) {
+        alert('❌ Please add at least one material before submitting!');
+        return;
+    }
+
+    // Track successful submissions to know when all are done
+    let successCount = 0;
+    
+    // Submit each item separately with its own FormData
+    bomData.forEach((item, index) => {
+        const formData = new FormData();
+        formData.append('style_id', style_id);
+        formData.append('material_type', item.material_type);
+        formData.append('material_description', item.material_description);
+        formData.append('quantity_required', item.quantity_required);
+        formData.append('unit', item.unit);
+        formData.append('sourcing_location', item.sourcing_location);
+        
+        // Append the file that was stored with this specific item
+        if (item.material_file) {
+            formData.append('material_file', item.material_file);
+        }
+        
+        // Make a proper fetch call with FormData
+        fetch('http://localhost:5001/api/bom/add', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+                // Note: Don't set Content-Type when using FormData - browser will set it correctly with boundary
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(`BOM Item ${index+1} Added:`, data);
+            successCount++;
+            
+            // If all items have been processed successfully, navigate to next page
+            if (successCount === bomData.length) {
+                alert('✅ BOM submitted successfully!');
+                window.location.href = 'pfbutton.html';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert(`❌ Error submitting item ${index+1}: ${error.message || 'Unknown error'}`);
+        });
+    });
+}
+
+    // Navigation Buttons
+    function goBack() { window.history.back(); }
+    function goForward() { window.location.href = 'pra.html'; }
+    
+    // Load Unit Dropdown on page load
+document.addEventListener('DOMContentLoaded', loadUnitDropdown);// Can modify next step as per flow
+</script>
+</body>
+</html>

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase Order (PO) for Accessories</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="blue-theme.css">
+</head>
+<body class="body-bg-light">
+
+    <!-- Sidebar Toggle Button -->
+    <div class="sidebar-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i> <!-- Hamburger icon -->
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>Menu</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="intro.html"><i class="fas fa-file-alt"></i> Style Details Entry</a></li>
+            <li><a href="bom.html"><i class="fas fa-list"></i> Bill of Materials (BOM)</a></li>
+            <li><a href="pra.html"><i class="fas fa-shopping-cart"></i> Purchase Requisition for Accessories</a></li>
+            <li><a href="prf.html"><i class="fas fa-tshirt"></i> Purchase Requisition for Fabric</a></li>
+            <li><a href="poa.html"><i class="fas fa-file-invoice"></i> Purchase Order for Accessories (POA)</a></li>
+            <li><a href="pof.html"><i class="fas fa-file-invoice"></i> Purchase Order (PO) for Fabric</a></li>
+            <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Procurement Status Dashboard</a></li>
+            <li><a href="grn.html"><i class="fas fa-receipt"></i> GRN & Request Number Generation</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <a href="#" id="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </div>
+    
+    <!-- Header Section -->
+<header class="header">
+    <div class="logo">&nbsp;&nbsp;&nbsp;&nbsp;TrimTrack</div>
+    <div class="user-info">
+        <span id="username">Guest</span> <!-- Dynamic user name -->
+         <!-- Dynamic user ID -->
+    </div>
+    <div class="search-container">
+        <input type="text" class="search-bar" placeholder="Search...">
+        <i class="fas fa-search search-icon"></i> <!-- Font Awesome search icon -->
+    </div>
+</header>
+
+    <div class="form-container">
+        <!-- Heading inside a box -->
+        <div class="form-header">
+            Purchase Order (PO) for Accessories
+        </div>
+
+        <div class="style-info-panel">
+            <h3>Style Information</h3>
+            <div class="style-details">
+                <div class="style-box">
+                    <i class="fas fa-hashtag"></i>
+                    <div class="style-content">
+                        <p class="style-label">Style Number</p>
+                        <p class="style-value" id="displayStyleNumber">-</p>
+                    </div>
+                </div>
+                <div class="style-box">
+                    <i class="fas fa-tag"></i>
+                    <div class="style-content">
+                        <p class="style-label">Style Name</p>
+                        <p class="style-value" id="displayStyleName">-</p>
+                    </div>
+                </div>
+                <div class="style-box">
+                    <i class="fas fa-user"></i>
+                    <div class="style-content">
+                        <p class="style-label">Buyer</p>
+                        <p class="style-value" id="displayBuyer">-</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table for PO Records -->
+        <div class="table-container">
+            <table class="material-table">
+                <thead>
+                    <tr>
+                        <th>PO Number</th>
+                        <th>Accessory Name</th>
+                        <th>Vendor Name</th>
+                        <th>Finalized Quantity</th>
+                        <th>Price/Unit</th>
+                        <th>Total Cost</th>
+                        <th>Expected Delivery</th>
+                        <th>Approval Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="poTableBody">
+                    <!-- Example Row -->
+            </table>
+        </div>
+
+        <!-- Add New PR Form -->
+        <!-- Add New PO Form -->
+        <div class="add-material">
+            <h3>Create New PO</h3>
+            <div class="input-grid">
+                <input type="number" id="prAccessoryId" placeholder="PR Accessories ID (Auto-filled)" readonly>
+                <input type="text" id="poNumber" placeholder="PO Number">
+                <select id="accessoryName" class="form-groups">
+                    <option value="">"Accessory Name"</option>
+                </select>
+                <input type="text" id="vendorName" placeholder="Vendor Name">
+                <input type="number" id="quantity" placeholder="Quantity" oninput="calculateTotalCost()">
+                <input type="number" id="pricePerUnit" placeholder="Price per Unit" oninput="calculateTotalCost()">
+                <input type="number" id="totalprice" placeholder="Total Cost" readonly>
+                <input type="date" id="expectedDate">
+                <select id="approvalStatus" class="form-groups">
+                    <option value="Pending">Pending 🟡</option>
+                    <option value="Approved">Approved 🟢</option>
+                    <option value="Rejected">Rejected 🔴</option>
+                </select>
+            </div>
+            <button onclick="addPO()" class="add-button">Add PO</button>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="save-button-container">
+            <button onclick="submitPO()" class="save-button" >Save and Next</button>
+        </div>
+
+        <!-- Arrow Buttons -->
+        <div class="arrow-buttons">
+            <span class="arrow" onclick="goBack()"><i class="fas fa-arrow-left"></i></span>
+            <span class="arrow disabled" id="nextArrow" onclick="goForward()"><i class="fas fa-arrow-right"></i></span>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <p>Contact Info: contact@xyz.com | Phone: +91 12345 67890 | Address: A-101, Delhi</p>
+        <p>© 2025 TrimTrack. All Rights Reserved.</p>
+    </footer>
+
+    <!-- JavaScript for Adding/Removing Rows -->
+    <script>
+        // Combined DOMContentLoaded event listener
+        document.addEventListener('DOMContentLoaded', () => {
+            const username = localStorage.getItem('username');
+            const token = localStorage.getItem('token');
+        
+            if (!username || !token) {
+                alert('Please login first!');
+                window.location.href = 'login.html';
+                return;
+            }
+        
+            document.getElementById('username').innerText = `${username}`;
+            // Display style details
+            document.getElementById('displayStyleNumber').textContent = localStorage.getItem('style_number') || '-';
+            document.getElementById('displayStyleName').textContent = localStorage.getItem('style_name') || '-';
+            document.getElementById('displayBuyer').textContent = localStorage.getItem('selected_buyer') || '-';
+        
+            const prAccessoryId = localStorage.getItem('pr_accessory_id');
+            if (prAccessoryId) {
+                document.getElementById('prAccessoryId').value = prAccessoryId;
+                console.log('✅ Auto-filled pr_accessory_id:', prAccessoryId);
+            } else {
+                console.warn('⚠️ No pr_accessory_id found. Check PR submission!');
+            }
+        
+            loadaccessoryNameDropdown();
+        
+            if (!document.getElementById("quantity")) {
+                console.error("❌ Quantity field missing from form!");
+            }
+        });
+        
+        // Logout functionality
+        document.getElementById('logout').addEventListener('click', function (e) {
+            e.preventDefault();
+            localStorage.clear();
+            alert('You have been logged out.');
+            window.location.href = 'login.html';
+        });
+        
+        // Toggle sidebar open/close
+        function toggleSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("open");
+        }
+        
+        const token = localStorage.getItem('token');
+        const style_id = localStorage.getItem('style_id');
+        let poAccessories = [];
+        let accessoryNames = [];
+        
+        function loadaccessoryNameDropdown() {
+            fetch('trim.csv')
+                .then(response => response.text())
+                .then(csvText => {
+                    const lines = csvText.split('\n').map(line => line.trim()).filter(line => line);
+                    accessoryNames = lines.slice(1);
+        
+                    const accessoryNameSelect = document.getElementById('accessoryName');
+                    accessoryNameSelect.innerHTML = '<option value="">Accessory Name</option>';
+                    accessoryNames.forEach(accessoryName => {
+                        let cleanName = accessoryName.replace(/^"|"$/g, '').replace(/,+$/, '').trim();
+                        if (cleanName && cleanName !== '') {
+                            const option = document.createElement('option');
+                            option.value = cleanName;
+                            option.textContent = cleanName;
+                            accessoryNameSelect.appendChild(option);
+                        }
+                    });
+                })
+                .catch(error => console.error('❌ Error loading accessory names:', error));
+        }
+        
+        // Auto-calculate total cost when quantity or price changes
+        function calculateTotalCost() {
+            const quantity = parseFloat(document.getElementById("quantity").value) || 0;
+            const pricePerUnit = parseFloat(document.getElementById("pricePerUnit").value) || 0;
+            const totalCost = quantity * pricePerUnit;
+        
+            console.log("Quantity:", quantity, "Price/Unit:", pricePerUnit, "Total Cost:", totalCost);
+            document.getElementById("totalprice").value = totalCost.toFixed(2);
+        }
+        
+        function addPO() {
+            let prAccessoryId = document.getElementById('prAccessoryId').value.trim();
+            if (!prAccessoryId) {
+                prAccessoryId = localStorage.getItem('pr_accessory_id');
+            }
+            console.log('🔍 pr_accessory_id Retrieved:', prAccessoryId);
+        
+            const poNumber = document.getElementById("poNumber").value.trim();
+            const accessoryName = document.getElementById("accessoryName").value.trim();
+            const vendorName = document.getElementById("vendorName").value.trim();
+            const quantity = parseFloat(document.getElementById("quantity").value);
+            const pricePerUnit = parseFloat(document.getElementById("pricePerUnit").value);
+            const expectedDate = document.getElementById("expectedDate").value.trim();
+            const approvalStatus = document.getElementById("approvalStatus").value.trim();
+            const totalCost = quantity * pricePerUnit;
+        
+            // Validation check
+            if (!prAccessoryId || !poNumber || !accessoryName || !vendorName || !expectedDate || !approvalStatus) {
+                alert('❌ Please fill all fields correctly!');
+                return;
+            }
+        
+            if (isNaN(quantity) || quantity <= 0) {
+                alert('❌ Quantity must be a positive number!');
+                return;
+            }
+        
+            if (isNaN(pricePerUnit) || pricePerUnit <= 0) {
+                alert('❌ Price per Unit must be a positive number!');
+                return;
+            }
+        
+            poAccessories.push({
+                pr_accessory_id: prAccessoryId,
+                po_number: poNumber,
+                accessories_type: accessoryName,
+                vendor_details: vendorName,
+                finalized_quantity: quantity,
+                price_per_unit: pricePerUnit,
+                expected_delivery_date: expectedDate,
+                approval_status: approvalStatus
+            });
+            console.log("✅ PO Added to Array:", poAccessories);
+        
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${poNumber}</td>
+                <td>${accessoryName}</td>
+                <td>${vendorName}</td>
+                <td>${quantity}</td>
+                <td>₹${pricePerUnit.toFixed(2)}</td>
+                <td>₹${totalCost.toFixed(2)}</td>
+                <td>${expectedDate}</td>
+                <td class="${approvalStatus === 'Approved' ? 'priority-green' : approvalStatus === 'Rejected' ? 'priority-red' : 'priority-yellow'}">${approvalStatus}</td>
+                <td><button class="delete-button" onclick="removeRow(this)">Delete</button></td>
+            `;
+            document.getElementById('poTableBody').appendChild(row);
+        
+            // Clear input fields after adding
+            document.getElementById("poNumber").value = "";
+            document.getElementById("accessoryName").value = "";
+            document.getElementById("vendorName").value = "";
+            document.getElementById("quantity").value = "";
+            document.getElementById("pricePerUnit").value = "";
+            document.getElementById("totalprice").value = "";
+            document.getElementById("expectedDate").value = "";
+            document.getElementById("approvalStatus").value = "Pending";
+        }
+        
+        // Remove Row and Data
+        function removeRow(button) {
+            const row = button.closest('tr');
+            const index = row.rowIndex - 1;
+            poAccessories.splice(index, 1);
+            row.remove();
+        }
+        
+        // Submit PO to Backend
+        function submitPO() {
+            console.log("Token:", token);
+            console.log("Style ID (Check if correct):", style_id);
+        
+            if (!style_id || !token) {
+                alert('❌ Missing Style ID or Token! Start from Style Entry.');
+                return;
+            }
+        
+            if (poAccessories.length === 0) {
+                alert('❌ Please add at least one material before submitting!');
+                return;
+            }
+        
+            let successCount = 0;
+            let errorCount = 0;
+            const totalItems = poAccessories.length;
+            const errors = [];
+        
+            poAccessories.forEach(item => {
+                const { total_cost, ...cleanItem } = item;
+                fetch('http://localhost:5001/api/po-accessories/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(cleanItem)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('✅ PO Added:', data);
+                    successCount++;
+        
+                    if (successCount + errorCount === totalItems) {
+                        if (errorCount > 0) {
+                            alert(`✅ Partially successful: ${successCount} POs submitted, ${errorCount} failed.\nErrors: ${errors.join('; ')}`);
+                        } else {
+                            alert('✅ PO Accessories submitted successfully!');
+                        }
+                        window.location.href = 'grn.html';
+                    }
+                })
+                .catch(error => {
+                    console.error('❌ Error:', error);
+                    errorCount++;
+                    errors.push(error.message);
+                    if (successCount + errorCount === totalItems) {
+                        if (errorCount > 0) {
+                            alert(`✅ Partially successful: ${successCount} POs submitted, ${errorCount} failed.\nErrors: ${errors.join('; ')}`);
+                        } else {
+                            alert('✅ PO Accessories submitted successfully!');
+                        }
+                        window.location.href = 'grn.html';
+                    }
+                });
+            });
+        }
+        
+        // Navigation Buttons
+        function goBack() {
+            window.history.back();
+        }
+        </script>
+        
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - TrimTrack</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="body-bg-dark">
+    <!-- Header Section -->
+    <header class="header">
+        <div class="logo">TrimTrack</div>
+        <div class="search-container">
+            <input type="text" class="search-bar" placeholder="Search...">
+            <i class="fas fa-search search-icon"></i>
+        </div>
+    </header>
+
+<!-- Login Form Section -->
+<div class="usa-login">
+    <h2 class="saturn-header">User Login</h2>
+    <form id="loginForm">
+        <div class="usa-login-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="Enter your username" required>
+        </div>
+        <div class="usa-login-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+        </div>
+        <button class="usa-login-button" type="submit">Login</button>
+    </form>
+    <div class="login-links">
+        <p class="forgot-password">
+            <a class="forgot-password-link" href="forgot-password.html">Forgot Password?</a>
+        </p>
+        <br>
+        <div class="signup-prompt">
+            <p class="signup-text">Don't have an account?</p>
+            <a class="doodle-button" href="signup.html">Sign up here</a>
+        </div>
+    </div>
+</div>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <p>Contact Info: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8ca9e5e4feebe9fecaef3f0a4e9e5e7">[email&#160;protected]</a> | Phone: +91 12345 67890 | Address: A-101, Delhi</p>
+        <p>© 2025 TrimTrack. All Rights Reserved.</p>
+    </footer>
+
+    <!-- Login Form Script -->
+    <script>
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        try {
+            const response = await fetch('http://localhost:5001/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('username', username);
+                alert('Login successful!');
+                window.location.href = 'intro.html';
+            } else {
+                alert(data.error || 'Invalid login credentials.');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Login failed. Please try again.');
+        }
+    });
+    </script>
+</body>
+</html>

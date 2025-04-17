@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrimTrack Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .highlight {
+            background-color: #ffeb3b;
+        }
+    </style>
+</head>
+<body class="body-bg-light">
+    <!-- Sidebar Toggle Button -->
+    <div class="sidebar-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="dashboard-sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>Menu</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="intro.html"><i class="fas fa-file-alt"></i> Style Details Entry</a></li>
+            <li><a href="bom.html"><i class="fas fa-list"></i> Bill of Materials (BOM)</a></li>
+            <li><a href="pra.html"><i class="fas fa-shopping-cart"></i> Purchase Requisition for Accessories</a></li>
+            <li><a href="prf.html"><i class="fas fa-tshirt"></i> Purchase Requisition for Fabric</a></li>
+            <li><a href="poa.html"><i class="fas fa-file-invoice"></i> Purchase Order for Accessories (POA)</a></li>
+            <li><a href="pof.html"><i class="fas fa-file-invoice"></i> Purchase Order (PO) for Fabric</a></li>
+            <li><a href="dashboard.html" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="grn.html"><i class="fas fa-receipt"></i> GRN & Request Number Generation</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <a href="#" id="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </div>
+
+    <!-- Header Section -->
+    <header class="dashboard-header">
+        <div class="logo">&nbsp;&nbsp;&nbsp;&nbsp;TrimTrack</div>
+        <div class="user-info">
+            <span id="username">Guest</span>
+        </div>
+
+    </div>
+    <div class="search-container">
+        <input type="text" id="search-bar" class="search-bar" placeholder="Search by ID, Style Number, or Style Name...">
+        <i class="fas fa-search search-icon" onclick="document.getElementById('search-bar').focus();"></i>
+    </div>
+    </header>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-container">
+        <h1 class="dashboard-title">Dashboard</h1>
+        
+        <!-- Stats Cards -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-tshirt"></i></div>
+                <div class="stat-content">
+                    <h3>Total Styles</h3>
+                    <p id="total-styles">0</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-list"></i></div>
+                <div class="stat-content">
+                    <h3>Total BOM Items</h3>
+                    <p id="total-bom-items">0</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-user"></i></div>
+                <div class="stat-content">
+                    <h3>Total Buyers</h3>
+                    <p id="total-buyers">0</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-tasks"></i></div>
+                <div class="stat-content">
+                    <h3>Material Types</h3>
+                    <p id="total-material-types">0</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <div class="chart-container">
+                <h2 class="chart-title">Styles by Sample Type</h2>
+                <canvas id="styles-by-buyer-chart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h2 class="chart-title">Material Type Distribution</h2>
+                <canvas id="material-type-chart"></canvas>
+            </div>
+        </div>
+
+        <!-- Unified Tracking Table Section -->
+        <div class="unified-tracking-section">
+            <!-- New styled header similar to procurement sections -->
+            <div class="procurement-header bg-gradient-to-r from-red-400 to-red-600 px-6 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <div class="bg-white p-2 rounded-full">
+                        <i class="fas fa-table text-red-500"></i>
+                    </div>
+                    <h2 class="text-xl font-bold text-whitesmoke">Unified Style Tracking</h2>
+                </div>
+            </div>
+    
+    <div class="filter-container">
+        <!-- Sample Type Multi-Select -->
+        <div class="filter-group">
+            <label for="sample-type-filter">Sample Type:</label>
+            <div class="multi-select-wrapper">
+                <div class="multi-select-toggle filter-select" id="sample-type-toggle">
+                    <span class="selected-text">Select Sample Types</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="multi-select-dropdown hidden" id="sample-type-dropdown">
+                    <div class="multi-select-options">
+                        <label class="multi-select-option">
+                            <input type="checkbox" value="Proto" name="sample-type">
+                            Proto
+                        </label>
+                        <label class="multi-select-option">
+                            <input type="checkbox" value="Fit" name="sample-type">
+                            Fit
+                        </label>
+                        <label class="multi-select-option">
+                            <input type="checkbox" value="PP" name="sample-type">
+                            PP
+                        </label>
+                        <label class="multi-select-option">
+                            <input type="checkbox" value="Shipment" name="sample-type">
+                            Shipment
+                        </label>
+                        <label class="multi-select-option">
+                            <input type="checkbox" value="Counter" name="sample-type">
+                            Counter
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="selected-tags" id="sample-type-tags"></div>
+        </div>
+
+        <!-- Buyer Multi-Select -->
+        <div class="filter-group">
+            <label for="buyer-filter">Buyer:</label>
+            <div class="multi-select-wrapper">
+                <div class="multi-select-toggle filter-select" id="buyer-toggle">
+                    <span class="selected-text">Select Buyers</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="multi-select-dropdown hidden" id="buyer-dropdown">
+                    <div class="multi-select-options" id="buyer-options">
+                        <!-- Will be populated dynamically -->
+                    </div>
+                </div>
+            </div>
+            <div class="selected-tags" id="buyer-tags"></div>
+        </div>
+
+        <!-- Filter Action Buttons -->
+        <div class="filter-actions">
+            <button id="apply-filters" class="filter-button bg-blue-500 hover:bg-blue-600 text-white">
+                Apply Filters
+            </button>
+            <button id="clear-filters" class="filter-button bg-gray-300 hover:bg-gray-400 text-gray-800">
+                Clear Filters
+            </button>
+        </div>
+    </div>
+    
+    <!-- Updated table header for Unified Style Tracking -->
+    <div class="table-responsive">
+        <table class="data-table tracking-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Style Number</th>
+                    <th>Style Name</th>
+                    <th>Buyer</th>
+                    <th>Sample Type</th>
+                    <th>BOM Status</th>
+                    <th>PR Status</th>
+                    <th>PO Status</th>
+                    <th>GRN Status</th>
+                    <th>Overall Status</th>
+                    <th>Created By</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="unified-tracking-table">
+                <!-- Will be populated dynamically -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+        <br>
+        
+        <!-- Fabric Procurement Status -->
+<!-- Improved Procurement Status Sections -->
+<div class="procurement-dashboard">
+    <!-- Fabric Procurement Status -->
+    <div class="procurement-section bg-white rounded-lg shadow-md overflow-hidden mb-8">
+        <div class="procurement-header bg-gradient-to-r from-blue-600 to-blue-800 px-6 py-4 flex justify-between items-center cursor-pointer" onclick="toggleProcurementSection('fabric')">
+            <div class="flex items-center space-x-2">
+                <div class="bg-white p-2 rounded-full">
+                    <i class="fas fa-tshirt text-blue-600"></i>
+                </div>
+                <h2 class="text-xl">Fabric Procurement Status</h2>
+            </div>
+            <i class="fas fa-chevron-up" id="fabric-chevron" style="color: white;"></i>
+
+        </div>
+        
+        <div class="p-6" id="fabric-content">
+            <!-- Progress Overview -->
+            <div class="mb-6">
+                <div class="flex justify-between mb-2">
+                    <h3 class="atext-xl">Overall Progress</h3>
+                    <span class="text-white font-bold" id="fabric-progress-text">0%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                    <div class="bg-blue-600 h-2.5 rounded-full transition-all duration-500" id="fabric-progress" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-blue-50 rounded-lg p-4 transition-transform hover:scale-105 border-l-4 border-blue-500">
+                    <div class="flex justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Pending PR</p>
+                            <p class="text-2xl font-bold text-blue-600" id="fabric-pending-pr">0</p>
+                        </div>
+                        <div class="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-file-alt text-blue-500"></i>
+                        </div>
+                    </div>
+                    <div class="text-xs font-semibold mt-2">
+                        <span class="text-gray-500">Requires PR creation</span>
+                    </div>
+                </div>
+                
+                <div class="bg-amber-50 rounded-lg p-4 transition-transform hover:scale-105 border-l-4 border-amber-500">
+                    <div class="flex justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Pending PO</p>
+                            <p class="text-2xl font-bold text-amber-600" id="fabric-pending-po">0</p>
+                        </div>
+                        <div class="h-12 w-12 bg-amber-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-file-invoice text-amber-500"></i>
+                        </div>
+                    </div>
+                    <div class="text-xs font-semibold mt-2">
+                        <span class="text-gray-500">Requires PO creation</span>
+                    </div>
+                </div>
+                
+                <div class="bg-green-50 rounded-lg p-4 transition-transform hover:scale-105 border-l-4 border-green-500">
+                    <div class="flex justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">In Delivery</p>
+                            <p class="text-2xl font-bold text-green-600" id="fabric-in-delivery">0</p>
+                        </div>
+                        <div class="h-12 w-12 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-truck text-green-500"></i>
+                        </div>
+                    </div>
+                    <div class="text-xs font-semibold mt-2">
+                        <span class="text-gray-500">En route to warehouse</span>
+                    </div>
+                </div>
+                
+                <div class="bg-indigo-50 rounded-lg p-4 transition-transform hover:scale-105 border-l-4 border-indigo-500">
+                    <div class="flex justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Completed</p>
+                            <p class="text-2xl font-bold text-indigo-600" id="fabric-completed">0</p>
+                        </div>
+                        <div class="h-12 w-12 bg-indigo-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-check-circle text-indigo-500"></i>
+                        </div>
+                    </div>
+                    <div class="text-xs font-semibold mt-2">
+                        <span class="text-gray-500">Successfully completed</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Upcoming Deliveries Table -->
+            <div>
+                <h3 class="atext-xl">
+                    <i class="fas fa-calendar-alt mr-2 text-white"></i>
+                    Upcoming Fabric Deliveries
+                </h3>
+                
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fabric Type</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Supplier</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expected Delivery</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200" id="fabric-timeline">
+                            <!-- Will be populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accessories Procurement Status -->
+    <div class="procurement-section bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="procurement-header bg-gradient-to-r from-purple-600 to-purple-800 px-6 py-4 flex justify-between items-center cursor-pointer" onclick="toggleProcurementSection('accessories')">
+            <div class="flex items-center space-x-2">
+                <div class="bg-white p-2 rounded-full">
+                    <i class="fas fa-cut text-purple-600"></i>
+                </div>
+                <h2 class="text-xl">Accessories Procurement Status</h2>
+            </div>
+            <i class="fas fa-chevron-up text-white" id="accessories-chevron"></i>
+        </div>
+        
+        <div class="p-6" id="accessories-content">
+            <!-- Progress Overview -->
+            <div class="mb-6">
+                <div class="flex justify-between mb-2">
+                    <h3 class="atext-xl">Overall Progress</h3>
+                    <span class="text-white font-bold" id="acc-progress-text">0%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                    <div class="bg-purple-600 h-2.5 rounded-full transition-all duration-500" id="acc-progress" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-purple-50 rounded-lg p-4 transition-transform hover:scale-105 border-l-4 border-purple-500">
+                    <div class="flex justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Pending PR</p>
+                            <p class="text-2xl font-bold text-purple-600" id="acc-pending-pr">0</p>
+                        </div>
+                        <div class="h-12 w-12 bg-purple-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-file-alt text-purple-500"></i>
+                        </div>
+                    </div>
+                    <div class="text-xs font-semibold mt-2">
+                        <span class="text-gray-500">Requires PR creation</span>
+                    </div>
+                </div>
+                
+                <div class="bg-amber-50 rounded-lg p-4 transition-transform hover:scale-105 border-l-4 border-amber-500">
+                    <div class="flex justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Pending PO</p>
+                            <p class="text-2xl font-bold text-amber-600" id="acc-pending-po">0</p>
+                        </div>
+                        <div class="h-12 w-12 bg-amber-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-file-invoice text-amber-500"></i>
+                        </div>
+                    </div>
+                    <div class="text-xs font-semibold mt-2">
+                        <span class="text-gray-500">Requires PO creation</span>
+                    </div>
+                </div>
+                
+                <div class="bg-green-50 rounded-lg p-4 transition-transform hover:scale-105 border-l-4 border-green-500">
+                    <div class="flex justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">In Delivery</p>
+                            <p class="text-2xl font-bold text-green-600" id="acc-in-delivery">0</p>
+                        </div>
+                        <div class="h-12 w-12 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-truck text-green-500"></i>
+                        </div>
+                    </div>
+                    <div class="text-xs font-semibold mt-2">
+                        <span class="text-gray-500">En route to warehouse</span>
+                    </div>
+                </div>
+                
+                <div class="bg-indigo-50 rounded-lg p-4 transition-transform hover:scale-105 border-l-4 border-indigo-500">
+                    <div class="flex justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Completed</p>
+                            <p class="text-2xl font-bold text-indigo-600" id="acc-completed">0</p>
+                        </div>
+                        <div class="h-12 w-12 bg-indigo-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-check-circle text-indigo-500"></i>
+                        </div>
+                    </div>
+                    <div class="text-xs font-semibold mt-2">
+                        <span class="text-gray-500">Successfully completed</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Upcoming Deliveries Table -->
+            <div>
+                <h3 class="atext-xl">
+                    <i class="fas fa-calendar-alt mr-2 text-white"></i>
+                    Upcoming Accessories Deliveries
+                </h3>
+                
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Accessory Name</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vendor</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expected Delivery</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200" id="accessories-timeline">
+                            <!-- Will be populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Contact Info: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3754585943565443774f4e4d1954585a">[email&#160;protected]</a> | Phone: +91 12345 67890 | Address: A-101, Delhi</p>
+            <p>© 2025 TrimTrack. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Dashboard JavaScript -->
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+    <script src="dashboard.js"></script>
+
+    <script src="procurementStatus.js"></script>
+    
+    <script>
+        // Sidebar toggle function
+        function toggleSidebar() {
+            document.getElementById("sidebar").classList.toggle("open");
+        }
+        
+        // Check login status on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const username = localStorage.getItem('username');
+            const token = localStorage.getItem('token');
+            
+            if (!username || !token) {
+                alert('Please login first!');
+                window.location.href = 'login.html';
+            } else {
+                document.getElementById('username').innerText = username;
+            }
+        });
+        
+        // Logout functionality
+        document.getElementById('logout').addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.clear();
+            alert('You have been logged out.');
+            window.location.href = 'login.html';
+        });
+    </script>
+    <script>
+        (function(){
+            function c(){
+                var b=a.contentDocument||a.contentWindow.document;
+                if(b){
+                    var d=b.createElement('script');
+                    d.innerHTML="window.__CF$cv$params={r:'9309acfdbb14bfcc',t:'MTc0NDcwMTU3Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
+                    b.getElementsByTagName('head')[0].appendChild(d)
+                }
+            }
+            if(document.body){
+                var a=document.createElement('iframe');
+                a.height=1;
+                a.width=1;
+                a.style.position='absolute';
+                a.style.top=0;
+                a.style.left=0;
+                a.style.border='none';
+                a.style.visibility='hidden';
+                document.body.appendChild(a);
+                if('loading'!==document.readyState)c();
+                else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);
+                else{
+                    var e=document.onreadystatechange||function(){};
+                    document.onreadystatechange=function(b){
+                        e(b);
+                        'loading'!==document.readyState&&(document.onreadystatechange=e,c())
+                    }
+                }
+            }
+        })();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'930df32b881e78c8',t:'MTc0NDc0NjM5NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
